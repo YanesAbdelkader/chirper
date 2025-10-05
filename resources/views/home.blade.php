@@ -1,12 +1,82 @@
 
 <x-layout>
+    @if ($errors->any())
+        <div class="alert alert-error shadow-lg max-w-2xl mx-auto mt-8">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </span>
+            </div>
+        </div>
+    @endif
     <x-slot:title>
         Home Feed
     </x-slot:title>
 
     <div class="max-w-2xl mx-auto">
         <h1 class="text-3xl font-bold mt-8">Latest Chirps</h1>
+        <div class="card bg-base-100 shadow mt-8">
 
+            <div class="card-body">
+
+                 <form method="POST" action="/chirps">
+
+            @csrf
+
+            <div class="form-control w-full">
+
+                <textarea
+
+                    name="message"
+
+                    placeholder="What's on your mind?"
+
+                    class="textarea textarea-bordered w-full resize-none @error('message') textarea-error @enderror"
+
+                    rows="4"
+
+                    maxlength="255"
+
+                    required
+
+                >{{ old('message') }}</textarea>
+
+ 
+
+                @error('message')
+
+                    <div class="label">
+
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+
+                    </div>
+
+                @enderror
+
+            </div>
+
+ 
+
+            <div class="mt-4 flex items-center justify-end">
+
+                <button type="submit" class="btn btn-primary btn-sm">
+
+                    Chirp
+
+                </button>
+
+            </div>
+
+        </form>
+
+            </div>
+
+        </div>
         <div class="space-y-4 mt-8">
             @forelse ($chirps as $chirp)
                 <x-chirp :chirp="$chirp" />
