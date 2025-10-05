@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Chirp;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ChirpController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -18,71 +20,45 @@ class ChirpController extends Controller
 
         return view('home', ['chirps' => $chirps]);
     }
+  
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'message' => 'required|string|max:255',
+    ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    // Use the authenticated user
+    auth()->user()->chirps()->create($validated);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'message' => 'required|string|max:255',
-        ]);
+    return redirect('/')->with('success', 'Your chirp has been posted!');
+}
 
-        Chirp::create([
-            'user_id' => null,
-            'message' => $request->input('message'),
-        ]);
+public function edit(Chirp $chirp)
+{
+    $this->authorize('update', $chirp);
 
-        return redirect('/')->with('success', 'Chirp created successfully!');
-    }
+    return view('chirps.edit', compact('chirp'));
+}
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+public function update(Request $request, Chirp $chirp)
+{
+    $this->authorize('update', $chirp);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Chirp $chirp)
-    {
-        return view('chirps.edit', compact('chirp'));
-    }
+    $validated = $request->validate([
+        'message' => 'required|string|max:255',
+    ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Chirp $chirp)
-    {
-        $request->validate([
-            'message' => 'required|string|max:255',
-        ]);
+    $chirp->update($validated);
 
-        $chirp->update([
-            'message' => $request->input('message'),
-        ]);
+    return redirect('/')->with('success', 'Chirp updated!');
+}
 
-        return redirect('/')->with('success', 'Chirp updated successfully!');
-    }
+public function destroy(Chirp $chirp)
+{
+    $this->authorize('delete', $chirp);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Chirp $chirp)
-    {
-        $chirp->delete();
+    $chirp->delete();
 
-        return redirect('/')->with('success', 'Chirp deleted successfully!');
-    }
+    return redirect('/')->with('success', 'Chirp deleted!');
+}
 }
