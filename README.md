@@ -21,7 +21,8 @@ A small Laravel application that demonstrates a "chirps" (short messages) feed w
 1. Clone the repository and install PHP dependencies:
 
 ```powershell
-cd c:\Code\example-app
+git clone https://github.com/YanesAbdelkader/chirper.git
+cd chirper
 composer install
 ```
 
